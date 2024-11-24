@@ -1,5 +1,3 @@
-El archivo se llama `README.md` y no debe ir en la carpeta `dist`, debe estar en la raíz del proyecto. Aquí te propongo el contenido:
-
 ```markdown
 # Procesador de Archivos CSV - Reporte de Consumos
 
