@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesador CSV</title>
+    <link rel="stylesheet" href="/src/style.css">
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>Procesador de Archivos CSV</h1>
+      </header>
+      
+      <main class="main">
+        <!-- Sección de carga de archivo -->
+        <section class="file-upload">
+          <h2>Cargar Archivo CSV</h2>
+          
+          <!-- Guía de formato -->
+          <div class="format-guide">
+              <h3>Guía para preparar el archivo</h3>
+              <div class="format-guide-content">
+                  <div class="format-info">
+                      <h4>Requisitos del archivo:</h4>
+                      <ul class="format-requirements">
+                          <li>Formato CSV (valores separados por comas)</li>
+                          <li>Tamaño máximo: 5MB</li>
+                          <li>Hasta 200,000 filas</li>
+                          <li>Codificación UTF-8</li>
+                          <li>Fecha en formato dd-MM-yyyy</li>
+                          <li>Valores numéricos usando punto como separador decimal</li>
+                      </ul>
+                      
+                      <div class="format-note">
+                          <strong>Nota:</strong> Asegúrese de que su archivo CSV contenga todas las columnas requeridas y en el orden correcto.
+                      </div>
+                  </div>
+                  
+                  <div class="format-example">
+                      <h4>Estructura del archivo:</h4>
+                      <table class="format-table">
+                          <thead>
+                              <tr>
+                                  <th>Columna</th>
+                                  <th>Tipo</th>
+                                  <th>Ejemplo</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                                  <td>Fecha</td>
+                                  <td>Texto</td>
+                                  <td>01-01-2024</td>
+                              </tr>
+                              <tr>
+                                  <td>Clase de Uso</td>
+                                  <td>Número</td>
+                                  <td>1</td>
+                              </tr>
+                              <tr>
+                                  <td>Medidor</td>
+                                  <td>Número</td>
+                                  <td>1</td>
+                              </tr>
+                              <tr>
+                                  <td>Consumo</td>
+                                  <td>Número</td>
+                                  <td>100.5</td>
+                              </tr>
+                              <tr>
+                                  <td>Total Facturado</td>
+                                  <td>Número</td>
+                                  <td>50000</td>
+                              </tr>
+                              <tr>
+                                  <td>Total Recaudo</td>
+                                  <td>Número</td>
+                                  <td>45000</td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
+      
+          <!-- Contenedor de carga existente -->
+          <div class="upload-container">
+              <input type="file" id="csvFile" accept=".csv" class="file-input" />
+              <label for="csvFile" class="file-label">
+                  Seleccionar archivo
+                  <span class="file-info">Archivos .csv hasta 5MB</span>
+              </label>
+          </div>
+      </section>
+
+        <!-- Sección de visualización previa -->
+        <section class="preview-section hidden">
+          <h2>Vista Previa</h2>
+          <div class="table-container">
+            <table id="previewTable">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Clase de Uso</th>
+                  <th>Medidor</th>
+                  <th>Consumo</th>
+                  <th>Total Facturado</th>
+                  <th>Total Recaudo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Los datos se cargarán dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <!-- Controles de paginación se agregarán dinámicamente -->
+          </div>
+        </section>
+
+        <!-- Sección de filtros y procesamiento -->
+        <section class="processing-section hidden">
+          <h2>Opciones de Procesamiento</h2>
+          <div class="filters">
+            <div class="filter-group">
+              <label for="reportType">Tipo de Reporte:</label>
+              <select id="reportType" class="filter-select">
+                <option value="monthly">Mensual</option>
+                <option value="annual">Anual</option>
+              </select>
+            </div>
+            <button id="processBtn" class="process-btn">
+              Procesar y Descargar
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

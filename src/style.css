@@ -1,0 +1,277 @@
+/* Variables y reset */
+:root {
+  --primary-color: #2563eb;
+  --secondary-color: #1d4ed8;
+  --background-color: #f8fafc;
+  --text-color: #1f2937;
+  --border-color: #e2e8f0;
+  --error-color: #ef4444;
+  --success-color: #22c55e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+/* Layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  color: var(--primary-color);
+  font-size: 2.5rem;
+}
+
+/* Secciones */
+section {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+section h2 {
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+}
+
+/* Carga de archivo */
+.upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s;
+}
+
+.file-label:hover {
+  background-color: var(--secondary-color);
+}
+
+.file-info {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+/* Tabla de vista previa */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background-color: var(--background-color);
+  font-weight: 600;
+}
+
+/* Controles de procesamiento */
+.filters {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-select {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  background-color: white;
+}
+
+.process-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.process-btn:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Utilidades */
+.hidden {
+  display: none;
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Estilos para la paginación */
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination-btn:disabled {
+  background-color: var(--border-color);
+  cursor: not-allowed;
+}
+
+.pagination-btn:not(:disabled):hover {
+  background-color: var(--secondary-color);
+}
+
+.page-info {
+  padding: 0.5rem 1rem;
+  color: var(--text-color);
+}
+
+/* Estilos para la guía de formato */
+.format-guide {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.format-guide h3 {
+  color: var(--text-color);
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.format-guide-content {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.format-info {
+  flex: 1;
+  min-width: 300px;
+}
+
+.format-example {
+  flex: 2;
+  min-width: 300px;
+}
+
+.format-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin-top: 1rem;
+}
+
+.format-table th,
+.format-table td {
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.format-table th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+}
+
+.format-requirements {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.format-requirements li {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.format-requirements li::before {
+  content: "•";
+  color: var(--primary-color);
+}
+
+.format-note {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-left: 4px solid var(--primary-color);
+  font-size: 0.875rem;
+}
