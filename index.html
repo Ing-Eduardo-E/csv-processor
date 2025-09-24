@@ -3,19 +3,47 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procesador CSV</title>
+    <title>Procesador de Servicios Públicos</title>
     <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
     <div class="container">
       <header class="header">
-        <h1>Procesador de Archivos CSV</h1>
+        <h1>Procesador de Servicios Públicos</h1>
       </header>
       
       <main class="main">
+        <!-- Sección de selección de servicio -->
+        <section class="service-selection">
+          <h2>Selección de Servicio</h2>
+          <div class="service-options">
+            <div class="service-option">
+              <input type="radio" id="acueducto" name="serviceType" value="acueducto">
+              <label for="acueducto" class="service-label">
+                <h3>Acueducto</h3>
+                <p>Procesamiento de datos de servicio de agua potable</p>
+              </label>
+            </div>
+            <div class="service-option">
+              <input type="radio" id="alcantarillado" name="serviceType" value="alcantarillado">
+              <label for="alcantarillado" class="service-label">
+                <h3>Alcantarillado</h3>
+                <p>Procesamiento de datos de servicio de alcantarillado</p>
+              </label>
+            </div>
+            <div class="service-option">
+              <input type="radio" id="aseo" name="serviceType" value="aseo">
+              <label for="aseo" class="service-label">
+                <h3>Aseo</h3>
+                <p>Procesamiento de datos de servicio de aseo</p>
+              </label>
+            </div>
+          </div>
+        </section>
+
         <!-- Sección de carga de archivo -->
-        <section class="file-upload">
-          <h2>Cargar Archivo CSV</h2>
+        <section class="file-upload hidden">
+          <h2>Cargar Archivo Excel</h2>
           
           <!-- Guía de formato -->
           <div class="format-guide">
@@ -24,75 +52,51 @@
                   <div class="format-info">
                       <h4>Requisitos del archivo:</h4>
                       <ul class="format-requirements">
-                          <li>Formato CSV (valores separados por comas)</li>
+                          <li>Formato Excel XLSX o CSV</li>
                           <li>Tamaño máximo: 5MB</li>
                           <li>Hasta 200,000 filas</li>
-                          <li>Codificación UTF-8</li>
-                          <li>Fecha en formato dd-MM-yyyy</li>
+                          <li>Primera fila debe contener los nombres de las columnas</li>
+                          <li>Fecha en formato dd-MM-yyyy o dd/MM/yyyy</li>
                           <li>Valores numéricos usando punto como separador decimal</li>
                       </ul>
                       
                       <div class="format-note">
-                          <strong>Nota:</strong> Asegúrese de que su archivo CSV contenga todas las columnas requeridas y en el orden correcto.
+                          <strong>Nota:</strong> Una vez cargado el archivo, podrá seleccionar las columnas específicas requeridas para el tipo de servicio elegido.
                       </div>
                   </div>
                   
-                  <div class="format-example">
-                      <h4>Estructura del archivo:</h4>
-                      <table class="format-table">
-                          <thead>
-                              <tr>
-                                  <th>Columna</th>
-                                  <th>Tipo</th>
-                                  <th>Ejemplo</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              <tr>
-                                  <td>Fecha</td>
-                                  <td>Texto</td>
-                                  <td>01-01-2024</td>
-                              </tr>
-                              <tr>
-                                  <td>Clase de Uso</td>
-                                  <td>Número</td>
-                                  <td>1</td>
-                              </tr>
-                              <tr>
-                                  <td>Medidor</td>
-                                  <td>Número</td>
-                                  <td>1</td>
-                              </tr>
-                              <tr>
-                                  <td>Consumo</td>
-                                  <td>Número</td>
-                                  <td>100.5</td>
-                              </tr>
-                              <tr>
-                                  <td>Total Facturado</td>
-                                  <td>Número</td>
-                                  <td>50000</td>
-                              </tr>
-                              <tr>
-                                  <td>Total Recaudo</td>
-                                  <td>Número</td>
-                                  <td>45000</td>
-                              </tr>
-                          </tbody>
-                      </table>
+                  <div class="format-example" id="columnRequirements">
+                      <h4>Columnas requeridas:</h4>
+                      <div id="requiredColumnsList">
+                          <!-- Se llenará dinámicamente según el servicio seleccionado -->
+                      </div>
                   </div>
               </div>
           </div>
       
           <!-- Contenedor de carga existente -->
           <div class="upload-container">
-              <input type="file" id="csvFile" accept=".csv" class="file-input" />
+              <input type="file" id="csvFile" accept=".csv,.xlsx" class="file-input" />
               <label for="csvFile" class="file-label">
                   Seleccionar archivo
-                  <span class="file-info">Archivos .csv hasta 5MB</span>
+                  <span class="file-info">Archivos .xlsx o .csv hasta 5MB</span>
               </label>
           </div>
       </section>
+
+        <!-- Sección de mapeo de columnas -->
+        <section class="column-mapping hidden">
+          <h2>Mapeo de Columnas</h2>
+          <div class="mapping-instructions">
+            <p>Seleccione las columnas de su archivo que corresponden a cada campo requerido:</p>
+          </div>
+          <div class="mapping-container" id="columnMappingContainer">
+            <!-- Se generará dinámicamente -->
+          </div>
+          <div class="mapping-actions">
+            <button id="confirmMappingBtn" class="process-btn">Confirmar Mapeo</button>
+          </div>
+        </section>
 
         <!-- Sección de visualización previa -->
         <section class="preview-section hidden">

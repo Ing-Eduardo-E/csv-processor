@@ -1,62 +1,174 @@
 ```markdown
-# Procesador de Archivos CSV - Reporte de Consumos
+# Procesador de Servicios Públicos
 
-Esta aplicación web permite procesar archivos CSV con información de consumos, facturas y recaudos, generando reportes consolidados mensuales y anuales.
+Esta aplicación web permite procesar archivos Excel (XLSX) o CSV con información de servicios públicos (Acueducto, Alcantarillado, Aseo), generando reportes consolidados mensuales y anuales con mapeo inteligente de columnas.
 
-## Características
+## 🚀 Características Principales
 
-- Carga y validación de archivos CSV
-- Procesamiento de hasta 200,000 registros
-- Visualización de datos con paginación
-- Reportes mensuales y anuales
-- Exportación a Excel o CSV
-- Interfaz intuitiva y responsiva
+- **Soporte Multi-Servicio**: Acueducto, Alcantarillado y Aseo
+- **Carga Flexible**: Archivos Excel XLSX o CSV
+- **Mapeo Inteligente**: Selección automática o manual de columnas
+- **Procesamiento Masivo**: Hasta 200,000 registros
+- **Reportes Dinámicos**: Visualización mensual y anual con paginación
+- **Exportación**: Descarga en formato Excel o CSV
+- **Interfaz Intuitiva**: Flujo paso a paso guiado
 
-## Requisitos del Archivo CSV
+## 📋 Tipos de Servicio Soportados
 
-### Estructura del Archivo
-El archivo CSV debe contener las siguientes columnas en este orden:
-- **Fecha**: formato dd-MM-yyyy (ejemplo: 01-01-2024)
-- **Clase de Uso**: valor numérico
-- **Medidor**: valor numérico (1 si tiene medidor, 0 si no tiene)
-- **Consumo**: valor numérico (metros cúbicos)
-- **Total Facturado**: valor numérico
-- **Total Recaudo**: valor numérico
+### 🚰 Acueducto (Servicio de Agua Potable)
+**Columnas requeridas:**
+- FECHA DE EXPEDICIÓN DE LA FACTURA
+- CÓDIGO CLASE DE USO
+- ESTADO DE MEDIDOR
+- CONSUMO DEL PERÍODO EN METROS CÚBICOS
+- VALOR TOTAL FACTURADO
+- PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPORTE
 
-### Especificaciones
-- Formato: CSV (valores separados por comas)
-- Codificación: UTF-8
+### 🚿 Alcantarillado 
+**Columnas requeridas:**
+- FECHA DE EXPEDICIÓN DE LA FACTURA
+- CÓDIGO CLASE DE USO
+- USUARIO FACTURADO CON AFORO
+- VERTIMIENTO DEL PERÍODO EN METROS CÚBICOS
+- VALOR TOTAL FACTURADO
+- PAGOS DEL CLIENTE DURANTE EL PERÍODO FACTURADO
+
+### 🗑️ Aseo (Recolección de Basuras)
+**Columnas requeridas:**
+- Fecha de expedición de la factura
+- Código de clase o uso
+
+## 📁 Requisitos del Archivo
+
+### Formatos Soportados
+- **Excel**: .xlsx (recomendado)
+- **CSV**: valores separados por comas
+
+### Especificaciones Técnicas
 - Tamaño máximo: 5MB
-- Límite de filas: 200,000
-- Valores numéricos: usar punto como separador decimal
+- Límite de registros: 200,000 filas
+- Primera fila: nombres de columnas (headers)
+- Fechas: formato dd-MM-yyyy o dd/MM/yyyy
+- Números: punto como separador decimal
+- Codificación: UTF-8 (para CSV)
 
-## Funcionalidades
+## 🔄 Flujo de Trabajo
+
+### 1. Selección de Servicio
+Elija el tipo de servicio público que desea procesar:
+- **Acueducto**: Para datos de consumo de agua
+- **Alcantarillado**: Para datos de vertimientos
+- **Aseo**: Para datos de usuarios por estrato
+
+### 2. Carga de Archivo
+- Seleccione su archivo Excel (.xlsx) o CSV
+- El sistema detectará automáticamente las columnas disponibles
+- Revise los requisitos específicos para el servicio seleccionado
+
+### 3. Mapeo de Columnas
+- Si las columnas no coinciden exactamente, aparecerá la interfaz de mapeo
+- Seleccione qué columna de su archivo corresponde a cada campo requerido
+- Confirme el mapeo para continuar
+
+### 4. Procesamiento y Visualización
+- Los datos se procesan automáticamente
+- Visualice la vista previa con paginación
+- Seleccione tipo de reporte (mensual o anual)
+
+### 5. Exportación
+- Descargue los resultados en formato Excel o CSV
+- El archivo incluye datos consolidados por período y clase de uso
+
+## 📊 Funcionalidades de Reportes
 
 ### Reportes Mensuales
 - Agrupa datos por mes y clase de uso
-- Muestra total de usuarios por clase
+- Cuenta usuarios únicos por período
+- Suma consumos, facturación y recaudos
 - Cuenta medidores activos
-- Suma consumos, facturación y recaudo
 
 ### Reportes Anuales
 - Agrupa datos por año y clase de uso
-- Calcula promedio de usuarios por clase
-- Calcula promedio de medidores activos
-- Suma total de consumos, facturación y recaudo
+- Calcula promedios mensuales de usuarios
+- Totaliza consumos anuales
+- Promedios de medidores activos
 
-### Exportación
-- Formato Excel (.xlsx)
-- Formato CSV
-- Mantiene el mismo formato de la visualización
-- Incluye todos los datos del período seleccionado
+### Campos del Reporte
+- **Período**: MM-YYYY (mensual) o YYYY (anual)
+- **Clase de Uso**: Código del tipo de usuario
+- **Usuarios**: Cantidad de usuarios registrados
+- **Medidores**: Cantidad de medidores activos
+- **Total Consumo**: Suma de consumos en m³
+- **Total Facturado**: Suma de importes facturados
+- **Total Recaudo**: Suma de pagos recibidos
 
-## Tecnologías Utilizadas
+## 💻 Tecnologías Utilizadas
 
-- Vite
-- JavaScript vanilla
-- PapaParse (procesamiento CSV)
-- XLSX (exportación Excel)
-- CSS personalizado
+- **Frontend**: Vanilla JavaScript (ES6+), HTML5, CSS3
+- **Build Tool**: Vite
+- **Librerías**:
+  - SheetJS (XLSX): Lectura de archivos Excel
+  - Papa Parse: Procesamiento de archivos CSV
+  - Responsive Design: Interfaz adaptativa
+
+## 🚀 Instalación y Desarrollo
+
+### Prerrequisitos
+- Node.js 16+ 
+- npm o yarn
+
+### Instalación
+```bash
+# Clonar el repositorio
+git clone https://github.com/Ing-Eduardo-E/csv-processor.git
+
+# Instalar dependencias
+cd csv-processor
+npm install
+
+# Ejecutar en modo desarrollo
+npm run dev
+
+# Construir para producción
+npm run build
+```
+
+## 📂 Estructura del Proyecto
+
+```
+csv-processor/
+├── src/
+│   ├── js/
+│   │   ├── config.js          # Configuración de servicios y validaciones
+│   │   ├── parsers.js         # Parsers para XLSX y CSV
+│   │   ├── dataProcessing.js  # Lógica de procesamiento de datos
+│   │   ├── ui.js              # Componentes de interfaz
+│   │   ├── pagination.js      # Control de paginación
+│   │   └── export.js          # Exportación de datos
+│   ├── style.css              # Estilos principales
+│   └── main.js                # Punto de entrada principal
+├── index.html                 # Página principal
+├── package.json               # Dependencias y scripts
+└── README.md                  # Documentación
+```
+
+## 🤝 Contribución
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## 📞 Soporte
+
+Para soporte técnico o preguntas, contacte al equipo de desarrollo o abra un issue en el repositorio.
 
 ## Instalación y Desarrollo Local
 
