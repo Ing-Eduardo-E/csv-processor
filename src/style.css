@@ -275,3 +275,152 @@ th {
   border-left: 4px solid var(--primary-color);
   font-size: 0.875rem;
 }
+
+/* Estilos para selección de servicio */
+.service-selection {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.service-options {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  margin-top: 1.5rem;
+}
+
+.service-option {
+  position: relative;
+}
+
+.service-option input[type="radio"] {
+  display: none;
+}
+
+.service-label {
+  display: block;
+  padding: 1.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  background-color: white;
+}
+
+.service-label:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.service-option input[type="radio"]:checked + .service-label {
+  border-color: var(--primary-color);
+  background-color: #f0f9ff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.service-label h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
+
+.service-label p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Estilos para mapeo de columnas */
+.column-mapping {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mapping-instructions {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 0.25rem;
+  border-left: 4px solid var(--primary-color);
+}
+
+.mapping-container {
+  display: grid;
+  gap: 1rem;
+}
+
+.mapping-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  background-color: #fafafa;
+}
+
+.mapping-label {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.mapping-select {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  background-color: white;
+  font-size: 0.9rem;
+}
+
+.mapping-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.mapping-actions {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.required-columns-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.required-columns-list li {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  background-color: #f1f5f9;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+}
+
+/* Estados de sección */
+.hidden {
+  display: none;
+}
+
+/* Responsive design mejoras */
+@media (max-width: 768px) {
+  .service-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .mapping-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .format-guide-content {
+    flex-direction: column;
+  }
+}
