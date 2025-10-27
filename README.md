@@ -15,20 +15,30 @@ Esta aplicación web permite procesar archivos CSV con información de consumos,
 ## Requisitos del Archivo CSV
 
 ### Estructura del Archivo
-El archivo CSV debe contener las siguientes columnas en este orden:
-- **Fecha**: formato dd-MM-yyyy (ejemplo: 01-01-2024)
-- **Clase de Uso**: valor numérico
-- **Medidor**: valor numérico (1 si tiene medidor, 0 si no tiene)
-- **Consumo**: valor numérico (metros cúbicos)
-- **Total Facturado**: valor numérico
-- **Total Recaudo**: valor numérico
+La aplicación procesa automáticamente archivos CSV exportados desde el sistema de facturación de acueducto. No es necesario modificar o eliminar columnas del archivo original.
+
+**Columnas requeridas del sistema:**
+- **FECHA DE EXPEDICIÓN DE LA FACTURA**: Fecha de emisión de la factura
+- **CÓDIGO CLASE DE USO**: Clasificación del usuario (valor numérico)
+- **ESTADO DE MEDIDOR**: Estado del medidor (INSTALADO, NO INSTALADO, etc.)
+- **CONSUMO DEL PERÍODO EN METROS CÚBICOS**: Consumo medido en m³
+- **VALOR TOTAL FACTURADO**: Total facturado al usuario
+- **PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE**: Recaudos del período
 
 ### Especificaciones
 - Formato: CSV (valores separados por comas)
 - Codificación: UTF-8
 - Tamaño máximo: 5MB
 - Límite de filas: 200,000
-- Valores numéricos: usar punto como separador decimal
+- El archivo puede contener todas las columnas del sistema original (49 columnas)
+- La aplicación extrae y procesa automáticamente solo las columnas necesarias
+
+### Transformaciones Automáticas
+La aplicación realiza las siguientes transformaciones:
+- **Fechas**: Normaliza automáticamente diferentes formatos de fecha a dd-MM-yyyy
+- **Estado de Medidor**: Convierte estados textuales (INSTALADO, NO INSTALADO, etc.) a valores numéricos (1 o 0)
+- **Valores numéricos**: Maneja diferentes formatos de números (con comas, puntos, símbolos de moneda)
+- **Clase de Uso**: Convierte a valores numéricos para agrupación
 
 ## Funcionalidades
 
@@ -103,11 +113,28 @@ proyecto/
 ## Uso
 
 1. Abrir la aplicación en el navegador
-2. Cargar un archivo CSV con el formato especificado
-3. Verificar los datos en la vista previa
-4. Seleccionar el tipo de reporte (mensual o anual)
-5. Usar los controles de paginación para navegar por los datos
-6. Hacer clic en "Procesar y Descargar" para exportar el reporte
+2. Exportar el archivo CSV completo desde el sistema de facturación de acueducto
+3. Cargar el archivo CSV en la aplicación (no requiere modificaciones previas)
+4. Verificar los datos transformados en la vista previa
+5. Seleccionar el tipo de reporte (mensual o anual)
+6. Usar los controles de paginación para navegar por los datos
+7. Hacer clic en "Procesar y Descargar" para exportar el reporte
+
+## Características Técnicas
+
+### Mapeo Automático de Columnas
+La aplicación mapea automáticamente las columnas del archivo original a un formato interno optimizado:
+- **FECHA DE EXPEDICIÓN DE LA FACTURA** → Fecha normalizada
+- **CÓDIGO CLASE DE USO** → Clase de Uso
+- **ESTADO DE MEDIDOR** → Medidor (1/0)
+- **CONSUMO DEL PERÍODO EN METROS CÚBICOS** → Consumo
+- **VALOR TOTAL FACTURADO** → Total Facturado
+- **PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE** → Total Recaudo
+
+### Validación de Datos
+- Verifica que el archivo contenga las columnas requeridas del sistema
+- Valida formato y estructura antes de procesamiento
+- Proporciona mensajes de error detallados en caso de problemas
 
 ## Limitaciones
 

@@ -275,3 +275,13 @@ th {
   border-left: 4px solid var(--primary-color);
   font-size: 0.875rem;
 }
+
+.format-help {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #eff6ff;
+  border-left: 4px solid var(--success-color);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-color);
+}

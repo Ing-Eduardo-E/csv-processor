@@ -28,58 +28,55 @@
                           <li>Tamaño máximo: 5MB</li>
                           <li>Hasta 200,000 filas</li>
                           <li>Codificación UTF-8</li>
-                          <li>Fecha en formato dd-MM-yyyy</li>
-                          <li>Valores numéricos usando punto como separador decimal</li>
+                          <li>Archivo completo del sistema de acueducto (todas las columnas)</li>
                       </ul>
                       
                       <div class="format-note">
-                          <strong>Nota:</strong> Asegúrese de que su archivo CSV contenga todas las columnas requeridas y en el orden correcto.
+                          <strong>Nota:</strong> La aplicación procesará automáticamente el archivo completo del sistema.
+                          No es necesario eliminar columnas ni modificar el formato original.
                       </div>
                   </div>
                   
                   <div class="format-example">
-                      <h4>Estructura del archivo:</h4>
+                      <h4>Columnas requeridas del archivo original:</h4>
                       <table class="format-table">
                           <thead>
                               <tr>
-                                  <th>Columna</th>
-                                  <th>Tipo</th>
-                                  <th>Ejemplo</th>
+                                  <th>Columna del Sistema</th>
+                                  <th>Descripción</th>
                               </tr>
                           </thead>
                           <tbody>
                               <tr>
-                                  <td>Fecha</td>
-                                  <td>Texto</td>
-                                  <td>01-01-2024</td>
+                                  <td>FECHA DE EXPEDICIÓN DE LA FACTURA</td>
+                                  <td>Fecha de facturación</td>
                               </tr>
                               <tr>
-                                  <td>Clase de Uso</td>
-                                  <td>Número</td>
-                                  <td>1</td>
+                                  <td>CÓDIGO CLASE DE USO</td>
+                                  <td>Clasificación del usuario</td>
                               </tr>
                               <tr>
-                                  <td>Medidor</td>
-                                  <td>Número</td>
-                                  <td>1</td>
+                                  <td>ESTADO DE MEDIDOR</td>
+                                  <td>INSTALADO, NO INSTALADO, etc.</td>
                               </tr>
                               <tr>
-                                  <td>Consumo</td>
-                                  <td>Número</td>
-                                  <td>100.5</td>
+                                  <td>CONSUMO DEL PERÍODO EN METROS CÚBICOS</td>
+                                  <td>Consumo medido</td>
                               </tr>
                               <tr>
-                                  <td>Total Facturado</td>
-                                  <td>Número</td>
-                                  <td>50000</td>
+                                  <td>VALOR TOTAL FACTURADO</td>
+                                  <td>Total facturado al usuario</td>
                               </tr>
                               <tr>
-                                  <td>Total Recaudo</td>
-                                  <td>Número</td>
-                                  <td>45000</td>
+                                  <td>PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE</td>
+                                  <td>Recaudos del período</td>
                               </tr>
                           </tbody>
                       </table>
+                      <p class="format-help">
+                          <strong>💡 Tip:</strong> Simplemente exporte el archivo CSV completo desde su sistema de facturación.
+                          La aplicación se encargará de procesar y resumir la información automáticamente.
+                      </p>
                   </div>
               </div>
           </div>

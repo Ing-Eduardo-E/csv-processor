@@ -230,16 +230,19 @@ async function handleFileUpload(event) {
   }
 
   try {
-    // Procesar el archivo
-    state.parsedData = await parseCSV(file);
-
-    // Validar estructura
-    const validation = validateCSVStructure(state.parsedData);
+    // Primero leer el archivo para validar estructura
+    const rawData = await parseRawCSV(file);
+    
+    // Validar que tenga las columnas originales requeridas
+    const validation = validateCSVStructure(rawData);
     if (!validation.isValid) {
       throw new Error(
-        `Columnas faltantes: ${validation.missingColumns.join(", ")}`
+        `El archivo no contiene las columnas requeridas. Columnas faltantes:\n${validation.missingColumns.join('\n')}`
       );
     }
+
+    // Ahora parsear y transformar los datos
+    state.parsedData = await parseCSV(file);
 
     // Resetear estado y mostrar datos
     state.currentPage = 1;
@@ -256,6 +259,34 @@ async function handleFileUpload(event) {
     alert(error.message || "Error al procesar el archivo.");
     elements.fileInput.value = "";
   }
+}
+
+/**
+ * Lee el CSV sin transformar para validación
+ * @param {File} file - Archivo a leer
+ * @returns {Promise<Array>} - Datos sin transformar
+ */
+function parseRawCSV(file) {
+  return new Promise((resolve, reject) => {
+    // Importar Papa dinámicamente para evitar duplicación
+    import('papaparse').then(Papa => {
+      Papa.default.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        preview: 1, // Solo leer primera línea para validación
+        complete: (results) => {
+          if (results.errors.length) {
+            reject(results.errors);
+          } else if (!results.data.length) {
+            reject(new Error("El archivo está vacío"));
+          } else {
+            resolve(results.data);
+          }
+        },
+        error: (error) => reject(error)
+      });
+    });
+  });
 }
 
 /**
