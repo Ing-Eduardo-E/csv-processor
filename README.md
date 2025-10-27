@@ -38,7 +38,14 @@ Procesa archivos del sistema de facturación de alcantarillado.
 - PAGOS DEL CLIENTE DURANTE EL PERÍODO FACTURADO
 
 ### 3. Aseo
-*(Próximamente)*
+Procesa archivos del sistema de facturación de aseo.
+
+**Columnas requeridas:**
+- Fecha de expedición de la factura
+- Código de clase o uso
+- Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)
+
+**Nota**: Para el servicio de Aseo solo se requiere el número de usuarios por estrato y la tarifa cobrada.
 
 ## Requisitos del Archivo CSV
 

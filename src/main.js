@@ -97,11 +97,74 @@ function handleExport(format = "xlsx") {
       state.parsedData,
       state.currentReportType
     );
-    exportData(filteredData, state.currentReportType, format);
+    exportData(filteredData, state.currentReportType, format, state.currentServiceType);
   } catch (error) {
     console.error("Error al exportar:", error);
     alert("Error al exportar los datos");
   }
+}
+
+/**
+ * Filtra y agrupa datos del servicio de Aseo
+ * @param {Array} data - Datos sin procesar
+ * @param {string} reportType - Tipo de reporte ('monthly' o 'annual')
+ */
+function filterAseoData(data, reportType) {
+  const groups = {};
+  const tarifasPorEstrato = {}; // Para guardar tarifas únicas por estrato
+
+  data.forEach((row) => {
+    const timeKey =
+      reportType === "monthly"
+        ? getMonthYear(row["Fecha"])
+        : getYear(row["Fecha"]);
+
+    const key = `${timeKey}_${row["Clase de Uso"]}`;
+    
+    if (!groups[key]) {
+      groups[key] = {
+        periodo: timeKey,
+        claseUso: row["Clase de Uso"],
+        numeroUsuarios: 0,
+        tarifa: 0
+      };
+      tarifasPorEstrato[key] = [];
+    }
+
+    // Incrementar contador de usuarios
+    groups[key].numeroUsuarios++;
+    
+    // Guardar tarifa si existe
+    const tarifa = Number(row["Tarifa"]) || 0;
+    if (tarifa > 0) {
+      tarifasPorEstrato[key].push(tarifa);
+    }
+  });
+
+  return Object.values(groups)
+    .map((group) => {
+      const key = `${group.periodo}_${group.claseUso}`;
+      
+      // Calcular tarifa promedio o más frecuente
+      if (tarifasPorEstrato[key] && tarifasPorEstrato[key].length > 0) {
+        // Usar la tarifa más frecuente (moda)
+        const tarifaPromedio = tarifasPorEstrato[key].reduce((sum, t) => sum + t, 0) / tarifasPorEstrato[key].length;
+        group.tarifa = Math.round(tarifaPromedio * 100) / 100;
+      }
+
+      return {
+        periodo: group.periodo,
+        claseUso: group.claseUso,
+        numeroUsuarios: group.numeroUsuarios,
+        tarifa: group.tarifa
+      };
+    })
+    .sort((a, b) => {
+      const periodoComparison = a.periodo.localeCompare(b.periodo);
+      return periodoComparison !== 0
+        ? periodoComparison
+        : Number(a.claseUso) - Number(b.claseUso);
+    });
 }
 
 /**
@@ -110,6 +173,11 @@ function handleExport(format = "xlsx") {
  * @param {string} reportType - Tipo de reporte ('monthly' o 'annual')
  */
 function filterDataByReportType(data, reportType) {
+  // Si es servicio de Aseo, usar procesamiento simplificado
+  if (state.currentServiceType === SERVICE_TYPES.ASEO) {
+    return filterAseoData(data, reportType);
+  }
+
   const groups = {};
   const monthlyTracking = {};
 
@@ -241,7 +309,8 @@ function updateReportView(reportType) {
       filteredData,
       state.currentPage,
       ROWS_PER_PAGE,
-      elements.previewTable
+      elements.previewTable,
+      state.currentServiceType
     );
 
     createPaginationControls(
