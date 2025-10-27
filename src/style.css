@@ -53,6 +53,52 @@ section h2 {
   color: var(--text-color);
 }
 
+/* Selección de servicio */
+.service-selection {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.service-selection h2 {
+  color: white;
+}
+
+.service-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.service-selector label {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.service-select {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid white;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.service-select:hover {
+  border-color: var(--primary-color);
+}
+
+.service-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.service-select option:disabled {
+  color: #999;
+}
+
 /* Carga de archivo */
 .upload-container {
   display: flex;

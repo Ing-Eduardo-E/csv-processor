@@ -13,6 +13,19 @@
       </header>
       
       <main class="main">
+        <!-- Sección de selección de servicio -->
+        <section class="service-selection">
+          <h2>Tipo de Servicio</h2>
+          <div class="service-selector">
+            <label for="serviceType">Seleccione el tipo de servicio:</label>
+            <select id="serviceType" class="service-select">
+              <option value="acueducto">Acueducto</option>
+              <option value="alcantarillado">Alcantarillado</option>
+              <option value="aseo" disabled>Aseo (Próximamente)</option>
+            </select>
+          </div>
+        </section>
+
         <!-- Sección de carga de archivo -->
         <section class="file-upload">
           <h2>Cargar Archivo CSV</h2>
@@ -28,7 +41,7 @@
                           <li>Tamaño máximo: 5MB</li>
                           <li>Hasta 200,000 filas</li>
                           <li>Codificación UTF-8</li>
-                          <li>Archivo completo del sistema de acueducto (todas las columnas)</li>
+                          <li id="serviceFileNote">Archivo completo del sistema (todas las columnas)</li>
                       </ul>
                       
                       <div class="format-note">
@@ -46,31 +59,8 @@
                                   <th>Descripción</th>
                               </tr>
                           </thead>
-                          <tbody>
-                              <tr>
-                                  <td>FECHA DE EXPEDICIÓN DE LA FACTURA</td>
-                                  <td>Fecha de facturación</td>
-                              </tr>
-                              <tr>
-                                  <td>CÓDIGO CLASE DE USO</td>
-                                  <td>Clasificación del usuario</td>
-                              </tr>
-                              <tr>
-                                  <td>ESTADO DE MEDIDOR</td>
-                                  <td>INSTALADO, NO INSTALADO, etc.</td>
-                              </tr>
-                              <tr>
-                                  <td>CONSUMO DEL PERÍODO EN METROS CÚBICOS</td>
-                                  <td>Consumo medido</td>
-                              </tr>
-                              <tr>
-                                  <td>VALOR TOTAL FACTURADO</td>
-                                  <td>Total facturado al usuario</td>
-                              </tr>
-                              <tr>
-                                  <td>PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE</td>
-                                  <td>Recaudos del período</td>
-                              </tr>
+                          <tbody id="formatTableBody">
+                              <!-- Se llenará dinámicamente según el servicio seleccionado -->
                           </tbody>
                       </table>
                       <p class="format-help">

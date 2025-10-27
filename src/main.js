@@ -1,6 +1,6 @@
 import { exportData } from "./js/export.js";
 
-import { MAX_FILE_SIZE, VALID_MIME_TYPES, ROWS_PER_PAGE } from "./js/config.js";
+import { MAX_FILE_SIZE, VALID_MIME_TYPES, ROWS_PER_PAGE, SERVICE_CONFIGS, SERVICE_TYPES } from "./js/config.js";
 
 import { parseCSV, validateCSVStructure } from "./js/parsers.js";
 
@@ -20,16 +20,67 @@ let state = {
   processedData: null,
   currentPage: 1,
   currentReportType: "monthly",
+  currentServiceType: SERVICE_TYPES.ACUEDUCTO, // Tipo de servicio por defecto
 };
 
 // Referencias DOM
 const elements = {
   fileInput: document.getElementById("csvFile"),
+  serviceTypeSelect: document.getElementById("serviceType"),
   previewSection: document.querySelector(".preview-section"),
   processingSection: document.querySelector(".processing-section"),
   previewTable: document.getElementById("previewTable"),
   reportTypeSelect: document.getElementById("reportType"),
+  formatTableBody: document.getElementById("formatTableBody"),
+  serviceFileNote: document.getElementById("serviceFileNote"),
 };
+
+/**
+ * Actualiza la guía de formato según el tipo de servicio seleccionado
+ * @param {string} serviceType - Tipo de servicio
+ */
+function updateFormatGuide(serviceType) {
+  const config = SERVICE_CONFIGS[serviceType];
+  if (!config) return;
+
+  // Actualizar nota del servicio
+  if (elements.serviceFileNote) {
+    elements.serviceFileNote.textContent = `Archivo completo del sistema de ${config.name} (todas las columnas)`;
+  }
+
+  // Actualizar tabla de columnas
+  if (elements.formatTableBody) {
+    elements.formatTableBody.innerHTML = '';
+    
+    config.displayColumns.forEach(col => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${col.original}</td>
+        <td>${col.description}</td>
+      `;
+      elements.formatTableBody.appendChild(row);
+    });
+  }
+}
+
+/**
+ * Maneja el cambio de tipo de servicio
+ * @param {Event} event - Evento del selector
+ */
+function handleServiceTypeChange(event) {
+  state.currentServiceType = event.target.value;
+  
+  // Actualizar la guía de formato
+  updateFormatGuide(state.currentServiceType);
+  
+  // Limpiar datos anteriores si había archivo cargado
+  if (state.parsedData) {
+    state.parsedData = null;
+    elements.fileInput.value = "";
+    elements.previewSection.classList.add("hidden");
+    elements.processingSection.classList.add("hidden");
+  }
+}
 
 /**
  * Maneja el proceso de exportación de datos
@@ -233,16 +284,16 @@ async function handleFileUpload(event) {
     // Primero leer el archivo para validar estructura
     const rawData = await parseRawCSV(file);
     
-    // Validar que tenga las columnas originales requeridas
-    const validation = validateCSVStructure(rawData);
+    // Validar que tenga las columnas originales requeridas según el servicio
+    const validation = validateCSVStructure(rawData, state.currentServiceType);
     if (!validation.isValid) {
       throw new Error(
-        `El archivo no contiene las columnas requeridas. Columnas faltantes:\n${validation.missingColumns.join('\n')}`
+        `El archivo no contiene las columnas requeridas para ${SERVICE_CONFIGS[state.currentServiceType].name}.\n\nColumnas faltantes:\n${validation.missingColumns.join('\n')}`
       );
     }
 
-    // Ahora parsear y transformar los datos
-    state.parsedData = await parseCSV(file);
+    // Ahora parsear y transformar los datos según el tipo de servicio
+    state.parsedData = await parseCSV(file, state.currentServiceType);
 
     // Resetear estado y mostrar datos
     state.currentPage = 1;
@@ -293,7 +344,11 @@ function parseRawCSV(file) {
  * Inicializa la aplicación
  */
 function initApp() {
+  // Actualizar guía de formato con servicio por defecto
+  updateFormatGuide(state.currentServiceType);
+
   // Event listeners
+  elements.serviceTypeSelect.addEventListener("change", handleServiceTypeChange);
   elements.fileInput.addEventListener("change", handleFileUpload);
   elements.reportTypeSelect.addEventListener("change", (e) => {
     state.currentReportType = e.target.value;

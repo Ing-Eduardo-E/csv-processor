@@ -1,12 +1,13 @@
 import Papa from 'papaparse';
-import { REQUIRED_SOURCE_COLUMNS, COLUMN_MAPPING, MEDIDOR_ESTADOS } from './config.js';
+import { SERVICE_CONFIGS } from './config.js';
 
 /**
- * Parsea y transforma el archivo CSV
+ * Parsea y transforma el archivo CSV según el tipo de servicio
  * @param {File} file - Archivo CSV a procesar
+ * @param {string} serviceType - Tipo de servicio ('acueducto', 'alcantarillado', 'aseo')
  * @returns {Promise<Array>} - Datos transformados
  */
-export function parseCSV(file) {
+export function parseCSV(file, serviceType) {
     return new Promise((resolve, reject) => {
         Papa.parse(file, {
             header: true,
@@ -19,7 +20,7 @@ export function parseCSV(file) {
                     reject(new Error("El archivo está vacío"));
                 } else {
                     // Transformar los datos del formato original al formato interno
-                    const transformedData = transformData(results.data);
+                    const transformedData = transformData(results.data, serviceType);
                     resolve(transformedData);
                 }
             },
@@ -29,11 +30,12 @@ export function parseCSV(file) {
 }
 
 /**
- * Valida que el CSV tenga las columnas requeridas del archivo original
+ * Valida que el CSV tenga las columnas requeridas según el tipo de servicio
  * @param {Array} data - Datos sin procesar
+ * @param {string} serviceType - Tipo de servicio
  * @returns {Object} - Resultado de la validación
  */
-export function validateCSVStructure(data) {
+export function validateCSVStructure(data, serviceType) {
     if (!Array.isArray(data) || !data.length) {
         return {
             isValid: false,
@@ -41,10 +43,18 @@ export function validateCSVStructure(data) {
         };
     }
 
+    const config = SERVICE_CONFIGS[serviceType];
+    if (!config) {
+        return {
+            isValid: false,
+            missingColumns: ["Tipo de servicio no válido"]
+        };
+    }
+
     const firstRow = data[0];
     const availableColumns = Object.keys(firstRow);
     
-    const missingColumns = REQUIRED_SOURCE_COLUMNS.filter(
+    const missingColumns = config.requiredColumns.filter(
         col => !availableColumns.includes(col)
     );
 
@@ -57,16 +67,22 @@ export function validateCSVStructure(data) {
 /**
  * Transforma los datos del formato original al formato interno
  * @param {Array} data - Datos originales
+ * @param {string} serviceType - Tipo de servicio
  * @returns {Array} - Datos transformados
  */
-function transformData(data) {
+function transformData(data, serviceType) {
+    const config = SERVICE_CONFIGS[serviceType];
+    if (!config) {
+        throw new Error("Configuración de servicio no encontrada");
+    }
+
     return data.map(row => {
         const transformedRow = {};
         
         // Mapear cada columna del archivo original a las columnas internas
-        for (const [sourceCol, targetCol] of Object.entries(COLUMN_MAPPING)) {
+        for (const [sourceCol, targetCol] of Object.entries(config.columnMapping)) {
             if (row.hasOwnProperty(sourceCol)) {
-                transformedRow[targetCol] = transformValue(sourceCol, row[sourceCol]);
+                transformedRow[targetCol] = transformValue(sourceCol, row[sourceCol], serviceType);
             }
         }
         
@@ -75,12 +91,13 @@ function transformData(data) {
 }
 
 /**
- * Transforma un valor según la columna
+ * Transforma un valor según la columna y tipo de servicio
  * @param {string} columnName - Nombre de la columna original
  * @param {*} value - Valor a transformar
+ * @param {string} serviceType - Tipo de servicio
  * @returns {*} - Valor transformado
  */
-function transformValue(columnName, value) {
+function transformValue(columnName, value, serviceType) {
     // Si el valor está vacío, retornar según el tipo esperado
     if (value === null || value === undefined || value === '') {
         return columnName === "FECHA DE EXPEDICIÓN DE LA FACTURA" ? '' : 0;
@@ -96,12 +113,18 @@ function transformValue(columnName, value) {
             return Number(value) || 0;
             
         case "ESTADO DE MEDIDOR":
-            // Convertir estado de medidor a 1 (tiene) o 0 (no tiene)
+            // Convertir estado de medidor a 1 (tiene) o 0 (no tiene) - ACUEDUCTO
             return convertMedidorState(value);
             
+        case "USUARIO FACTURADO CON AFORO":
+            // Convertir aforo a 1 (SI) o 0 (NO) - ALCANTARILLADO
+            return convertAforoState(value);
+            
         case "CONSUMO DEL PERÍODO EN METROS CÚBICOS":
+        case "VERTIMIENTO DEL PERIOD EN METROS CUBICOS":
         case "VALOR TOTAL FACTURADO":
         case "PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE":
+        case "PAGOS DEL CLIENTE DURANTE EL PERÍODO FACTURADO":
             // Convertir a número, manejando diferentes formatos
             return parseNumber(value);
             
@@ -165,6 +188,14 @@ function convertMedidorState(estado) {
     
     const estadoUpper = String(estado).toUpperCase().trim();
     
+    // Estados válidos para acueducto
+    const MEDIDOR_ESTADOS = {
+        "INSTALADO": 1,
+        "NO INSTALADO": 0,
+        "DAÑADO": 1,
+        "RETIRADO": 0
+    };
+    
     // Buscar en el mapeo de estados
     if (MEDIDOR_ESTADOS.hasOwnProperty(estadoUpper)) {
         return MEDIDOR_ESTADOS[estadoUpper];
@@ -180,6 +211,28 @@ function convertMedidorState(estado) {
     
     // Por defecto, asumir que tiene medidor si hay algún valor
     return 1;
+}
+
+/**
+ * Convierte el estado de aforo a valor numérico
+ * @param {string} aforo - Estado de aforo (SI/NO)
+ * @returns {number} - 1 si tiene aforo, 0 si no
+ */
+function convertAforoState(aforo) {
+    if (!aforo) return 0;
+    
+    const aforoUpper = String(aforo).toUpperCase().trim();
+    
+    // Convertir SI/NO a 1/0
+    if (aforoUpper === 'SI' || aforoUpper === 'SÍ' || aforoUpper === 'S' || aforoUpper === '1') {
+        return 1;
+    }
+    if (aforoUpper === 'NO' || aforoUpper === 'N' || aforoUpper === '0') {
+        return 0;
+    }
+    
+    // Por defecto, asumir que no tiene aforo
+    return 0;
 }
 
 /**
