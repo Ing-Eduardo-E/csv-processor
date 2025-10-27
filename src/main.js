@@ -2,7 +2,7 @@ import { exportData } from "./js/export.js";
 
 import { MAX_FILE_SIZE, VALID_MIME_TYPES, ROWS_PER_PAGE, SERVICE_CONFIGS, SERVICE_TYPES } from "./js/config.js";
 
-import { parseCSV, validateCSVStructure } from "./js/parsers.js";
+import { parseCSV, parseExcel, validateCSVStructure } from "./js/parsers.js";
 
 import {
   processAndGroupData,
@@ -344,14 +344,18 @@ async function handleFileUpload(event) {
   }
 
   if (!VALID_MIME_TYPES.includes(file.type)) {
-    alert("Por favor, seleccione un archivo CSV válido");
+    alert("Por favor, seleccione un archivo CSV o Excel válido");
     elements.fileInput.value = "";
     return;
   }
 
   try {
+    // Detectar tipo de archivo por extensión
+    const fileName = file.name.toLowerCase();
+    const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+    
     // Primero leer el archivo para validar estructura
-    const rawData = await parseRawCSV(file);
+    const rawData = isExcel ? await parseRawExcel(file) : await parseRawCSV(file);
     
     // Validar que tenga las columnas originales requeridas según el servicio
     const validation = validateCSVStructure(rawData, state.currentServiceType);
@@ -361,8 +365,10 @@ async function handleFileUpload(event) {
       );
     }
 
-    // Ahora parsear y transformar los datos según el tipo de servicio
-    state.parsedData = await parseCSV(file, state.currentServiceType);
+    // Ahora parsear y transformar los datos según el tipo de servicio y formato
+    state.parsedData = isExcel 
+      ? await parseExcel(file, state.currentServiceType)
+      : await parseCSV(file, state.currentServiceType);
 
     // Resetear estado y mostrar datos
     state.currentPage = 1;
@@ -406,6 +412,51 @@ function parseRawCSV(file) {
         error: (error) => reject(error)
       });
     });
+  });
+}
+
+/**
+ * Lee el Excel sin transformar para validación
+ * @param {File} file - Archivo a leer
+ * @returns {Promise<Array>} - Datos sin transformar
+ */
+function parseRawExcel(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      try {
+        // Importar XLSX dinámicamente
+        import('xlsx').then(XLSX => {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          // Leer la primera hoja
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          
+          // Convertir solo la primera fila para validación
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+            raw: false,
+            defval: '',
+            range: 0 // Solo primera fila de datos
+          });
+          
+          if (!jsonData.length) {
+            reject(new Error("El archivo Excel está vacío"));
+          } else {
+            resolve(jsonData);
+          }
+        }).catch(error => {
+          reject(new Error(`Error al importar librería XLSX: ${error.message}`));
+        });
+      } catch (error) {
+        reject(new Error(`Error al leer el archivo Excel: ${error.message}`));
+      }
+    };
+    
+    reader.onerror = () => reject(new Error("Error al leer el archivo"));
+    reader.readAsArrayBuffer(file);
   });
 }
 

@@ -1,6 +1,10 @@
 // Configuración global
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB en bytes
-export const VALID_MIME_TYPES = ["text/csv", "application/vnd.ms-excel"];
+export const VALID_MIME_TYPES = [
+    "text/csv", 
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // .xlsx
+];
 export const ROWS_PER_PAGE = 10;
 
 // Tipos de servicio disponibles

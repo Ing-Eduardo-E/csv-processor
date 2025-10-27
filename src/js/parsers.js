@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
 import { SERVICE_CONFIGS } from './config.js';
 
 /**
@@ -26,6 +27,48 @@ export function parseCSV(file, serviceType) {
             },
             error: (error) => reject(error)
         });
+    });
+}
+
+/**
+ * Parsea y transforma el archivo Excel según el tipo de servicio
+ * @param {File} file - Archivo Excel a procesar
+ * @param {string} serviceType - Tipo de servicio ('acueducto', 'alcantarillado', 'aseo')
+ * @returns {Promise<Array>} - Datos transformados
+ */
+export function parseExcel(file, serviceType) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Leer la primera hoja
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convertir a JSON (array de objetos)
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                    raw: false, // Convertir todo a strings
+                    defval: '' // Valor por defecto para celdas vacías
+                });
+                
+                if (!jsonData.length) {
+                    reject(new Error("El archivo Excel está vacío"));
+                } else {
+                    // Transformar los datos del formato original al formato interno
+                    const transformedData = transformData(jsonData, serviceType);
+                    resolve(transformedData);
+                }
+            } catch (error) {
+                reject(new Error(`Error al leer el archivo Excel: ${error.message}`));
+            }
+        };
+        
+        reader.onerror = () => reject(new Error("Error al leer el archivo"));
+        reader.readAsArrayBuffer(file);
     });
 }
 

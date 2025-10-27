@@ -1,12 +1,12 @@
 ```markdown
-# Procesador de Archivos CSV - Reporte de Consumos
+# Procesador de Archivos CSV/Excel - Reporte de Consumos
 
-Esta aplicación web permite procesar archivos CSV con información de servicios públicos (Acueducto, Alcantarillado y Aseo), generando reportes consolidados mensuales y anuales.
+Esta aplicación web permite procesar archivos CSV o Excel con información de servicios públicos (Acueducto, Alcantarillado y Aseo), generando reportes consolidados mensuales y anuales.
 
 ## Características
 
 - Soporte para múltiples tipos de servicio (Acueducto, Alcantarillado, Aseo)
-- Carga y validación de archivos CSV con mapeo automático de columnas
+- Carga y validación de archivos CSV o Excel (.xlsx) con mapeo automático de columnas
 - Procesamiento de hasta 200,000 registros
 - Visualización de datos con paginación
 - Reportes mensuales y anuales
@@ -47,11 +47,11 @@ Procesa archivos del sistema de facturación de aseo.
 
 **Nota**: Para el servicio de Aseo solo se requiere el número de usuarios por estrato y la tarifa cobrada.
 
-## Requisitos del Archivo CSV
+## Requisitos del Archivo
 
 ### Especificaciones Generales
-- Formato: CSV (valores separados por comas)
-- Codificación: UTF-8
+- Formato: CSV (valores separados por comas) o Excel (.xlsx)
+- Codificación: UTF-8 (para archivos CSV)
 - Tamaño máximo: 5MB
 - Límite de filas: 200,000
 - El archivo puede contener todas las columnas del sistema original
@@ -149,8 +149,8 @@ proyecto/
 
 1. Abrir la aplicación en el navegador
 2. Seleccionar el tipo de servicio (Acueducto, Alcantarillado o Aseo)
-3. Exportar el archivo CSV completo desde el sistema de facturación correspondiente
-4. Cargar el archivo CSV en la aplicación (no requiere modificaciones previas)
+3. Exportar el archivo completo desde el sistema de facturación correspondiente (formato CSV o Excel)
+4. Cargar el archivo en la aplicación (no requiere modificaciones previas)
 5. Verificar los datos transformados en la vista previa
 6. Seleccionar el tipo de reporte (mensual o anual)
 7. Usar los controles de paginación para navegar por los datos
