@@ -230,36 +230,20 @@ function formatDate(dateStr) {
 /**
  * Convierte el estado del medidor a valor numérico
  * @param {string} estado - Estado del medidor
- * @returns {number} - 1 si tiene medidor, 0 si no
+ * @returns {number} - 1 si está instalado, 0 en cualquier otro caso
  */
 function convertMedidorState(estado) {
     if (!estado) return 0;
     
     const estadoUpper = String(estado).toUpperCase().trim();
     
-    // Estados válidos para acueducto
-    const MEDIDOR_ESTADOS = {
-        "INSTALADO": 1,
-        "NO INSTALADO": 0,
-        "DAÑADO": 1,
-        "RETIRADO": 0
-    };
-    
-    // Buscar en el mapeo de estados
-    if (MEDIDOR_ESTADOS.hasOwnProperty(estadoUpper)) {
-        return MEDIDOR_ESTADOS[estadoUpper];
-    }
-    
-    // Si contiene palabras clave
-    if (estadoUpper.includes('INSTALADO') && !estadoUpper.includes('NO')) {
+    // Solo contar como 1 si está explícitamente INSTALADO
+    if (estadoUpper === 'INSTALADO' || (estadoUpper.includes('INSTALADO') && !estadoUpper.includes('NO'))) {
         return 1;
     }
-    if (estadoUpper.includes('NO INSTALADO') || estadoUpper.includes('RETIRADO')) {
-        return 0;
-    }
     
-    // Por defecto, asumir que tiene medidor si hay algún valor
-    return 1;
+    // Cualquier otro estado es 0 (NO INSTALADO, DAÑADO, RETIRADO, etc.)
+    return 0;
 }
 
 /**
