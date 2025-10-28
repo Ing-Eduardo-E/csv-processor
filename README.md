@@ -52,10 +52,18 @@ Procesa archivos del sistema de facturación de aseo.
 ### Especificaciones Generales
 - Formato: CSV (valores separados por comas) o Excel (.xlsx)
 - Codificación: UTF-8 (para archivos CSV)
-- Tamaño máximo: 5MB
+- Tamaño máximo: 25MB
 - Límite de filas: 200,000
 - El archivo puede contener todas las columnas del sistema original
 - La aplicación extrae y procesa automáticamente solo las columnas necesarias
+
+**Límites y Recomendaciones:**
+- El límite de 25MB permite procesar archivos con aproximadamente:
+  - **CSV**: Hasta 150,000-200,000 registros (dependiendo del número de columnas)
+  - **Excel**: Hasta 100,000-150,000 registros (archivos .xlsx son más pesados)
+- Para archivos muy grandes (>20MB), se recomienda usar formato CSV en lugar de Excel para mejor rendimiento
+- El procesamiento se realiza completamente en el navegador sin enviar datos a ningún servidor
+- Navegadores modernos pueden manejar estos tamaños sin problemas en equipos con al menos 4GB de RAM
 
 ### Servicio de Acueducto
 **Columnas requeridas del sistema:**

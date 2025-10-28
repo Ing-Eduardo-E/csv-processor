@@ -338,7 +338,7 @@ async function handleFileUpload(event) {
   if (!file) return;
 
   if (file.size > MAX_FILE_SIZE) {
-    alert("El archivo excede el tamaño máximo permitido de 5MB");
+    alert("El archivo excede el tamaño máximo permitido de 25MB");
     elements.fileInput.value = "";
     return;
   }

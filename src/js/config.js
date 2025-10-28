@@ -1,5 +1,5 @@
 // Configuración global
-export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB en bytes
+export const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB en bytes
 export const VALID_MIME_TYPES = [
     "text/csv", 
     "application/vnd.ms-excel",
