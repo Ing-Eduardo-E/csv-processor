@@ -143,7 +143,9 @@ function transformData(data, serviceType) {
 function transformValue(columnName, value, serviceType) {
     // Si el valor está vacío, retornar según el tipo esperado
     if (value === null || value === undefined || value === '') {
-        if (columnName === "FECHA DE EXPEDICIÓN DE LA FACTURA" || columnName === "Fecha de expedición de la factura") {
+        if (columnName === "FECHA DE EXPEDICIÓN DE LA FACTURA" || 
+            columnName === "Fecha de expedición de la factura" ||
+            columnName === "9. Fecha de expedición de la factura") {
             return '';
         }
         return 0;
@@ -152,11 +154,13 @@ function transformValue(columnName, value, serviceType) {
     switch (columnName) {
         case "FECHA DE EXPEDICIÓN DE LA FACTURA":
         case "Fecha de expedición de la factura":
+        case "9. Fecha de expedición de la factura":
             // Convertir fecha del formato que venga a dd-MM-yyyy
             return formatDate(value);
             
         case "CÓDIGO CLASE DE USO":
         case "Código de clase o uso":
+        case "18. Código de clase o uso":
             // Convertir a número
             return Number(value) || 0;
             
@@ -174,6 +178,7 @@ function transformValue(columnName, value, serviceType) {
         case "PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE":
         case "PAGOS DEL CLIENTE DURANTE EL PERÍODO FACTURADO":
         case "Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)":
+        case "36. Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)":
             // Convertir a número, manejando diferentes formatos
             return parseNumber(value);
             

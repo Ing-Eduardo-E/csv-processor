@@ -82,19 +82,19 @@ export const ALCANTARILLADO_CONFIG = {
 export const ASEO_CONFIG = {
     name: 'Aseo',
     columnMapping: {
-        "Fecha de expedición de la factura": "Fecha",
-        "Código de clase o uso": "Clase de Uso",
-        "Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)": "Tarifa"
+        "9. Fecha de expedición de la factura": "Fecha",
+        "18. Código de clase o uso": "Clase de Uso",
+        "36. Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)": "Tarifa"
     },
     requiredColumns: [
-        "Fecha de expedición de la factura",
-        "Código de clase o uso",
-        "Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)"
+        "9. Fecha de expedición de la factura",
+        "18. Código de clase o uso",
+        "36. Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)"
     ],
     displayColumns: [
-        { original: "Fecha de expedición de la factura", description: "Fecha de facturación" },
-        { original: "Código de clase o uso", description: "Estrato o clase del usuario" },
-        { original: "Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)", description: "Tarifa de recolección y transporte" }
+        { original: "9. Fecha de expedición de la factura", description: "Fecha de facturación" },
+        { original: "18. Código de clase o uso", description: "Estrato o clase del usuario" },
+        { original: "36. Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)", description: "Tarifa de recolección y transporte" }
     ],
     // Aseo usa una estructura diferente (no tiene consumo ni recaudo)
     isSimplified: true
