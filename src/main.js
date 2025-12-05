@@ -388,15 +388,37 @@ async function handleFileUpload(event) {
 }
 
 /**
+ * Lee el archivo con la codificación correcta
+ * @param {File} file - Archivo a leer
+ * @returns {Promise<string>} - Contenido del archivo como texto
+ */
+async function readFileWithEncoding(file) {
+  // Primero intentar leer como UTF-8
+  const utf8Text = await file.text();
+  
+  // Si contiene caracteres de reemplazo (indica encoding incorrecto), intentar Latin-1
+  if (utf8Text.includes('\uFFFD') || utf8Text.includes('�')) {
+    // Leer como ArrayBuffer y decodificar como Latin-1 (Windows-1252)
+    const buffer = await file.arrayBuffer();
+    const decoder = new TextDecoder('windows-1252');
+    return decoder.decode(buffer);
+  }
+  
+  return utf8Text;
+}
+
+/**
  * Lee el CSV sin transformar para validación
  * @param {File} file - Archivo a leer
  * @returns {Promise<Array>} - Datos sin transformar
  */
-function parseRawCSV(file) {
+async function parseRawCSV(file) {
+  const fileContent = await readFileWithEncoding(file);
+  
   return new Promise((resolve, reject) => {
     // Importar Papa dinámicamente para evitar duplicación
     import('papaparse').then(Papa => {
-      Papa.default.parse(file, {
+      Papa.default.parse(fileContent, {
         header: true,
         skipEmptyLines: true,
         preview: 1, // Solo leer primera línea para validación

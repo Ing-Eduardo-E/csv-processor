@@ -3,30 +3,56 @@ import * as XLSX from 'xlsx';
 import { SERVICE_CONFIGS } from './config.js';
 
 /**
+ * Detecta y lee el archivo con la codificación correcta
+ * @param {File} file - Archivo a leer
+ * @returns {Promise<string>} - Contenido del archivo como texto
+ */
+async function readFileWithEncoding(file) {
+    // Primero intentar leer como UTF-8
+    const utf8Text = await file.text();
+    
+    // Si contiene caracteres de reemplazo (indica encoding incorrecto), intentar Latin-1
+    if (utf8Text.includes('\uFFFD') || utf8Text.includes('�')) {
+        // Leer como ArrayBuffer y decodificar como Latin-1 (Windows-1252)
+        const buffer = await file.arrayBuffer();
+        const decoder = new TextDecoder('windows-1252');
+        return decoder.decode(buffer);
+    }
+    
+    return utf8Text;
+}
+
+/**
  * Parsea y transforma el archivo CSV según el tipo de servicio
  * @param {File} file - Archivo CSV a procesar
  * @param {string} serviceType - Tipo de servicio ('acueducto', 'alcantarillado', 'aseo')
  * @returns {Promise<Array>} - Datos transformados
  */
 export function parseCSV(file, serviceType) {
-    return new Promise((resolve, reject) => {
-        Papa.parse(file, {
-            header: true,
-            dynamicTyping: false, // Mantener como strings para procesamiento manual
-            skipEmptyLines: true,
-            complete: (results) => {
-                if (results.errors.length) {
-                    reject(results.errors);
-                } else if (!results.data.length) {
-                    reject(new Error("El archivo está vacío"));
-                } else {
-                    // Transformar los datos del formato original al formato interno
-                    const transformedData = transformData(results.data, serviceType);
-                    resolve(transformedData);
-                }
-            },
-            error: (error) => reject(error)
-        });
+    return new Promise(async (resolve, reject) => {
+        try {
+            const fileContent = await readFileWithEncoding(file);
+            
+            Papa.parse(fileContent, {
+                header: true,
+                dynamicTyping: false, // Mantener como strings para procesamiento manual
+                skipEmptyLines: true,
+                complete: (results) => {
+                    if (results.errors.length) {
+                        reject(results.errors);
+                    } else if (!results.data.length) {
+                        reject(new Error("El archivo está vacío"));
+                    } else {
+                        // Transformar los datos del formato original al formato interno
+                        const transformedData = transformData(results.data, serviceType);
+                        resolve(transformedData);
+                    }
+                },
+                error: (error) => reject(error)
+            });
+        } catch (error) {
+            reject(error);
+        }
     });
 }
 
@@ -73,6 +99,44 @@ export function parseExcel(file, serviceType) {
 }
 
 /**
+ * Normaliza un string para comparación flexible (sin tildes, minúsculas, espacios normalizados)
+ * @param {string} str - String a normalizar
+ * @returns {string} - String normalizado
+ */
+function normalizeString(str) {
+    return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Quitar tildes
+        .toLowerCase()
+        .replace(/\s+/g, ' ') // Normalizar espacios múltiples
+        .trim();
+}
+
+/**
+ * Busca una columna en las columnas disponibles usando coincidencia flexible
+ * @param {string} requiredCol - Columna requerida
+ * @param {Array} availableColumns - Columnas disponibles
+ * @returns {string|null} - Nombre exacto de la columna encontrada o null
+ */
+function findMatchingColumn(requiredCol, availableColumns) {
+    const normalizedRequired = normalizeString(requiredCol);
+    
+    // Primero intentar coincidencia exacta
+    if (availableColumns.includes(requiredCol)) {
+        return requiredCol;
+    }
+    
+    // Luego buscar coincidencia normalizada
+    for (const col of availableColumns) {
+        if (normalizeString(col) === normalizedRequired) {
+            return col;
+        }
+    }
+    
+    return null;
+}
+
+/**
  * Valida que el CSV tenga las columnas requeridas según el tipo de servicio
  * @param {Array} data - Datos sin procesar
  * @param {string} serviceType - Tipo de servicio
@@ -98,7 +162,7 @@ export function validateCSVStructure(data, serviceType) {
     const availableColumns = Object.keys(firstRow);
     
     const missingColumns = config.requiredColumns.filter(
-        col => !availableColumns.includes(col)
+        col => !findMatchingColumn(col, availableColumns)
     );
 
     return {
@@ -119,13 +183,26 @@ function transformData(data, serviceType) {
         throw new Error("Configuración de servicio no encontrada");
     }
 
+    // Obtener columnas disponibles del primer registro
+    const availableColumns = data.length > 0 ? Object.keys(data[0]) : [];
+    
+    // Crear mapeo de columnas config -> columnas reales del archivo
+    const columnMap = {};
+    for (const sourceCol of Object.keys(config.columnMapping)) {
+        const matchedCol = findMatchingColumn(sourceCol, availableColumns);
+        if (matchedCol) {
+            columnMap[sourceCol] = matchedCol;
+        }
+    }
+    
     return data.map(row => {
         const transformedRow = {};
         
         // Mapear cada columna del archivo original a las columnas internas
         for (const [sourceCol, targetCol] of Object.entries(config.columnMapping)) {
-            if (row.hasOwnProperty(sourceCol)) {
-                transformedRow[targetCol] = transformValue(sourceCol, row[sourceCol], serviceType);
+            const actualCol = columnMap[sourceCol];
+            if (actualCol && row.hasOwnProperty(actualCol)) {
+                transformedRow[targetCol] = transformValue(sourceCol, row[actualCol], serviceType);
             }
         }
         
@@ -141,50 +218,43 @@ function transformData(data, serviceType) {
  * @returns {*} - Valor transformado
  */
 function transformValue(columnName, value, serviceType) {
+    const normalizedCol = normalizeString(columnName);
+    
     // Si el valor está vacío, retornar según el tipo esperado
     if (value === null || value === undefined || value === '') {
-        if (columnName === "FECHA DE EXPEDICIÓN DE LA FACTURA" || 
-            columnName === "Fecha de expedición de la factura" ||
-            columnName === "9. Fecha de expedición de la factura") {
+        if (normalizedCol.includes('fecha de expedicion')) {
             return '';
         }
         return 0;
     }
     
-    switch (columnName) {
-        case "FECHA DE EXPEDICIÓN DE LA FACTURA":
-        case "Fecha de expedición de la factura":
-        case "9. Fecha de expedición de la factura":
-            // Convertir fecha del formato que venga a dd-MM-yyyy
-            return formatDate(value);
-            
-        case "CÓDIGO CLASE DE USO":
-        case "Código de clase o uso":
-        case "18. Código de clase o uso":
-            // Convertir a número
-            return Number(value) || 0;
-            
-        case "ESTADO DE MEDIDOR":
-            // Convertir estado de medidor a 1 (tiene) o 0 (no tiene) - ACUEDUCTO
-            return convertMedidorState(value);
-            
-        case "USUARIO FACTURADO CON AFORO":
-            // Convertir aforo a 1 (SI) o 0 (NO) - ALCANTARILLADO
-            return convertAforoState(value);
-            
-        case "CONSUMO DEL PERÍODO EN METROS CÚBICOS":
-        case "VERTIMIENTO DEL PERIOD EN METROS CUBICOS":
-        case "VALOR TOTAL FACTURADO":
-        case "PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE":
-        case "PAGOS DEL CLIENTE DURANTE EL PERÍODO FACTURADO":
-        case "Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)":
-        case "36. Tarifa para la actividad d e recolección y transporte - TRT ($ corrientes)":
-            // Convertir a número, manejando diferentes formatos
-            return parseNumber(value);
-            
-        default:
-            return value;
+    // Usar comparación normalizada para los casos
+    if (normalizedCol.includes('fecha de expedicion')) {
+        return formatDate(value);
     }
+    
+    if (normalizedCol === 'codigo clase de uso' || normalizedCol.includes('codigo de clase o uso')) {
+        return Number(value) || 0;
+    }
+    
+    if (normalizedCol === 'estado de medidor') {
+        return convertMedidorState(value);
+    }
+    
+    if (normalizedCol === 'usuario facturado con aforo') {
+        return convertAforoState(value);
+    }
+    
+    if (normalizedCol.includes('consumo del periodo') || 
+        normalizedCol.includes('vertimiento del period') ||
+        normalizedCol === 'valor total facturado' ||
+        normalizedCol.includes('pagos del usuario') ||
+        normalizedCol.includes('pagos del cliente') ||
+        normalizedCol.includes('tarifa para la actividad')) {
+        return parseNumber(value);
+    }
+    
+    return value;
 }
 
 /**
@@ -234,20 +304,25 @@ function formatDate(dateStr) {
 
 /**
  * Convierte el estado del medidor a valor numérico
- * @param {string} estado - Estado del medidor
- * @returns {number} - 1 si está instalado, 0 en cualquier otro caso
+ * @param {string|number} estado - Estado del medidor (puede ser texto o número)
+ * @returns {number} - 1 si el valor es 1 o "INSTALADO", 0 en cualquier otro caso
  */
 function convertMedidorState(estado) {
-    if (!estado) return 0;
+    if (estado === null || estado === undefined || estado === '') return 0;
     
+    // Si es un número o string numérico, verificar si es 1
+    const numValue = Number(estado);
+    if (!isNaN(numValue)) {
+        return numValue === 1 ? 1 : 0;
+    }
+    
+    // Si es texto, verificar si dice "INSTALADO"
     const estadoUpper = String(estado).toUpperCase().trim();
-    
-    // Solo contar como 1 si está explícitamente INSTALADO
     if (estadoUpper === 'INSTALADO' || (estadoUpper.includes('INSTALADO') && !estadoUpper.includes('NO'))) {
         return 1;
     }
     
-    // Cualquier otro estado es 0 (NO INSTALADO, DAÑADO, RETIRADO, etc.)
+    // Cualquier otro estado es 0
     return 0;
 }
 

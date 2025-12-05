@@ -21,7 +21,7 @@ export function processAndGroupData(data) {
               periodo: timeKey,
               claseUso: row['Clase de Uso'],
               numeroUsuarios: 0,
-              medidores: new Set(),
+              medidores: 0,
               totalConsumo: 0,
               totalFacturado: 0,
               totalRecaudo: 0
@@ -29,7 +29,7 @@ export function processAndGroupData(data) {
       }
 
       groups[key].numeroUsuarios += 1;
-      groups[key].medidores.add(row['Medidor']);
+      groups[key].medidores += Number(row['Medidor']) === 1 ? 1 : 0;
       groups[key].totalConsumo += Number(row['Consumo']) || 0;
       groups[key].totalFacturado += Number(row['Total Facturado']) || 0;
       groups[key].totalRecaudo += Number(row['Total Recaudo']) || 0;
@@ -43,7 +43,7 @@ function transformGroupsToArray(groups) {
       periodo: group.periodo,
       claseUso: group.claseUso,
       numeroUsuarios: group.numeroUsuarios,
-      numeroMedidores: group.medidores.size,
+      numeroMedidores: group.medidores,
       totalConsumo: Math.round(group.totalConsumo * 100) / 100,
       totalFacturado: Math.round(group.totalFacturado * 100) / 100,
       totalRecaudo: Math.round(group.totalRecaudo * 100) / 100
