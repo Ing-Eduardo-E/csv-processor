@@ -6,24 +6,42 @@ import { normalizeColumnName, buildNormalizedLookup, findColumnMatch } from './u
 
 export { normalizeColumnName, buildNormalizedLookup, findColumnMatch };
 
+async function readFileWithEncoding(file) {
+    const utf8Text = await file.text();
+
+    if (utf8Text.includes('\uFFFD')) {
+        const buffer = await file.arrayBuffer();
+        const decoder = new TextDecoder('windows-1252');
+        return decoder.decode(buffer);
+    }
+
+    return utf8Text;
+}
+
 export function parseCSV(file, serviceType) {
-    return new Promise((resolve, reject) => {
-        Papa.parse(file, {
-            header: true,
-            dynamicTyping: false,
-            skipEmptyLines: true,
-            complete: (results) => {
-                if (results.errors.length) {
-                    reject(results.errors);
-                } else if (!results.data.length) {
-                    reject(new Error("El archivo está vacío"));
-                } else {
-                    const transformedData = transformData(results.data, serviceType);
-                    resolve(transformedData);
-                }
-            },
-            error: (error) => reject(error)
-        });
+    return new Promise(async (resolve, reject) => {
+        try {
+            const fileContent = await readFileWithEncoding(file);
+
+            Papa.parse(fileContent, {
+                header: true,
+                dynamicTyping: false,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    if (results.errors.length) {
+                        reject(results.errors);
+                    } else if (!results.data.length) {
+                        reject(new Error("El archivo está vacío"));
+                    } else {
+                        const transformedData = transformData(results.data, serviceType);
+                        resolve(transformedData);
+                    }
+                },
+                error: (error) => reject(error)
+            });
+        } catch (error) {
+            reject(error);
+        }
     });
 }
 
@@ -122,22 +140,28 @@ export function validateCSVStructure(data, serviceType) {
 }
 
 export function parseRawCSV(file) {
-    return new Promise((resolve, reject) => {
-        Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            preview: 1,
-            complete: (results) => {
-                if (results.errors.length) {
-                    reject(results.errors);
-                } else if (!results.data.length) {
-                    reject(new Error("El archivo está vacío"));
-                } else {
-                    resolve(results.data);
-                }
-            },
-            error: (error) => reject(error)
-        });
+    return new Promise(async (resolve, reject) => {
+        try {
+            const fileContent = await readFileWithEncoding(file);
+
+            Papa.parse(fileContent, {
+                header: true,
+                skipEmptyLines: true,
+                preview: 1,
+                complete: (results) => {
+                    if (results.errors.length) {
+                        reject(results.errors);
+                    } else if (!results.data.length) {
+                        reject(new Error("El archivo está vacío"));
+                    } else {
+                        resolve(results.data);
+                    }
+                },
+                error: (error) => reject(error)
+            });
+        } catch (error) {
+            reject(error);
+        }
     });
 }
 

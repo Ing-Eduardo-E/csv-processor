@@ -12,7 +12,7 @@ export function buildNormalizedLookup(columns) {
     const lookup = new Map();
     for (const col of columns) {
         const normalized = normalizeColumnName(col);
-        if (!lookup.has(normalized)) {
+        if (normalized && !lookup.has(normalized)) {
             lookup.set(normalized, col);
         }
     }
@@ -22,7 +22,7 @@ export function buildNormalizedLookup(columns) {
 function levenshtein(a, b) {
     const m = a.length;
     const n = b.length;
-    if (Math.abs(m - n) > Math.max(m, n) * 0.3) return Infinity;
+    if (Math.abs(m - n) > Math.max(m, n) * 0.4) return Infinity;
     const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
     for (let i = 0; i <= m; i++) dp[i][0] = i;
     for (let j = 0; j <= n; j++) dp[0][j] = j;
@@ -46,27 +46,28 @@ export function findColumnMatch(lookup, requiredCol) {
     }
 
     const requiredLen = normalizedRequired.length;
-    const minPrefixLen = Math.ceil(requiredLen * 0.7);
+
+    let bestMatch = null;
+    let bestDistance = Infinity;
 
     for (const [normalizedAvail, originalAvail] of lookup) {
-        if (normalizedAvail.length < minPrefixLen) continue;
+        const availLen = normalizedAvail.length;
+        const lenRatio = Math.min(requiredLen, availLen) / Math.max(requiredLen, availLen);
 
-        if (normalizedRequired.startsWith(normalizedAvail)) {
+        if (lenRatio < 0.6) continue;
+
+        if (normalizedRequired.startsWith(normalizedAvail) || normalizedAvail.startsWith(normalizedRequired)) {
             return originalAvail;
         }
-        if (normalizedAvail.startsWith(normalizedRequired)) {
-            return originalAvail;
-        }
 
-        const availPrefix = normalizedAvail.substring(0, minPrefixLen);
-        const reqPrefix = normalizedRequired.substring(0, minPrefixLen);
-        if (availPrefix === reqPrefix) {
-            const distance = levenshtein(normalizedRequired, normalizedAvail);
-            if (distance <= Math.max(requiredLen * 0.25, 3)) {
-                return originalAvail;
-            }
+        const distance = levenshtein(normalizedRequired, normalizedAvail);
+        const maxAllowed = Math.max(Math.ceil(requiredLen * 0.3), 4);
+
+        if (distance <= maxAllowed && distance < bestDistance) {
+            bestDistance = distance;
+            bestMatch = originalAvail;
         }
     }
 
-    return null;
+    return bestMatch;
 }

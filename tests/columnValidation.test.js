@@ -316,4 +316,80 @@ describe('validateCSVStructure - casos de producción', () => {
         expect(result.isValid).toBe(false);
         expect(result.matchedColumns['VALOR TOTAL FACTURADO']).toBe('VALOR TOTAL FACTURADO');
     });
+
+    it('valida CSV real de acueducto con encoding corrupto (U+FFFD en vez de tildes)', () => {
+        const data = [{
+            'NUID': '1',
+            'NUMERO DE CUENTA CONTRATO': '1',
+            'C\uFFFDIGO DANE DEPARTAMENTO': '1',
+            'C\uFFFDIGO DANE MUNICIPIO': '1',
+            'ZONA IGAC': '1',
+            'SECTOR IGAC': '1',
+            'MANZANA O VEREDA IGAC': '1',
+            'N\uFFFDMERO DEL PREDIO IGAC': '1',
+            'CONDICION DE PROPIEDAD DEL PREDIO IGAC': '1',
+            'DIRECCI\uFFFDN DEL PREDIO': '1',
+            'N\uFFFDMERO DE FACTURA': '1',
+            'FECHA DE EXPEDICI\uFFFDN DE LA FACTURA': '01-01-2024',
+            'FECHA DE INICIO DEL PER\uFFFDO DE FACTURACI\uFFFDN': '01-01-2024',
+            'DIAS FACTURADOS': '30',
+            'C\uFFFDIGO CLASE DE USO': '1',
+            'UNIDADES MULTIUSUARIO RESIDENCIAL': '1',
+            'UNIDADES MULTIUSUARIO NO RESIDENCIAL': '1',
+            'HOGAR COMUNITARIO O SUSTITUTO': '1',
+            'ESTADO DE MEDIDOR': '0',
+            'DETERMINACI\uFFFDN DEL CONSUMO': '1',
+            'LECTURA ANTERIOR': '100',
+            'LECTURA ACTUAL': '110',
+            'CONSUMO DEL PER\uFFFDO EN METROS C\uFFFDBICOS': '10',
+            'CARGO FIJO': '1000',
+            'CARGO POR CONSUMO B\uFFFDSICO': '2000',
+            'CARGO POR CONSUMO COMPLEMENTARIO': '3000',
+            'CARGO POR CONS UMO SUNTUARIO': '4000',
+            'CMT (COSTO MEDIO DE TASA DE USO)': '5000',
+            'VALOR POR METRO C\uFFFDBICO': '500',
+            'VALOR FACTURADO POR CONSUMO': '6000',
+            'VALOR DEL SUBSIDIO': '0',
+            'VALOR DE LA CONTRIBUCI\uFFFDN': '0',
+            'FACTOR DE SUBSIDIO O CONTRIBUCI\uFFFDN CARGO FIJO': '1',
+            'FACTOR DE SUBSIDIO O CONTRIBUCI\uFFFDN CONSUMO': '1',
+            'CARGOS POR CONEXI\uFFFDN': '0',
+            'CARGOS POR RECONEXI\uFFFDN': '0',
+            'CARGOS POR REINSTALACI\uFFFDN': '0',
+            'CARGOS POR SUSPENSI\uFFFDN': '0',
+            'CARGOS POR CORTE': '0',
+            'PAGO ANTICIPADO DEL SERVICIO': '0',
+            'D\uFFFDS DE MORA': '0',
+            'VALOR DE MORA': '0',
+            'INTERESES POR MORA': '0',
+            'OTROS COBROS': '0',
+            'CAUSAL DE REFACTURACI\uFFFDN': '',
+            'NUMERO DE FACTURA OBJETO DE REFACTURACION': '',
+            'VALOR TOTAL FACTURADO': '10000',
+            'PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE': '10000'
+        }];
+
+        const result = validateCSVStructure(data, 'acueducto');
+
+        expect(result.isValid).toBe(true);
+        expect(result.missingColumns).toHaveLength(0);
+
+        expect(result.matchedColumns['FECHA DE EXPEDICIÓN DE LA FACTURA'])
+            .toBe('FECHA DE EXPEDICI\uFFFDN DE LA FACTURA');
+        expect(result.matchedColumns['CÓDIGO CLASE DE USO'])
+            .toBe('C\uFFFDIGO CLASE DE USO');
+        expect(result.matchedColumns['CONSUMO DEL PERÍODO EN METROS CÚBICOS'])
+            .toBe('CONSUMO DEL PER\uFFFDO EN METROS C\uFFFDBICOS');
+        expect(result.matchedColumns['ESTADO DE MEDIDOR'])
+            .toBe('ESTADO DE MEDIDOR');
+        expect(result.matchedColumns['VALOR TOTAL FACTURADO'])
+            .toBe('VALOR TOTAL FACTURADO');
+        expect(result.matchedColumns['PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE'])
+            .toBe('PAGOS DEL USUARIO RECIBIDOS DURANTE EL MES DE REPOPRTE');
+    });
+
+    it('fuzzy: no hace match entre columnas con 60%+ de diferencia', () => {
+        const lookup = buildNormalizedLookup(['NUID', 'ZONA IGAC', 'CARGO FIJO']);
+        expect(findColumnMatch(lookup, 'CONSUMO DEL PERÍODO EN METROS CÚBICOS')).toBeNull();
+    });
 });
