@@ -53,7 +53,7 @@ export const ALCANTARILLADO_CONFIG = {
     columnMapping: {
         "FECHA DE EXPEDICIÓN DE LA FACTURA": "Fecha",
         "CÓDIGO CLASE DE USO": "Clase de Uso",
-        "USUARIO FACTURADO CON AFORO": "Medidor",
+        "VALOR FACTURADO POR VERTIDO": "Medidor",
         "VERTIMIENTO DEL PERIOD EN METROS CUBICOS": "Consumo",
         "VALOR TOTAL FACTURADO": "Total Facturado",
         "PAGOS DEL CLIENTE DURANTE EL PERÍODO FACTURADO": "Total Recaudo"
@@ -61,7 +61,7 @@ export const ALCANTARILLADO_CONFIG = {
     requiredColumns: [
         "FECHA DE EXPEDICIÓN DE LA FACTURA",
         "CÓDIGO CLASE DE USO",
-        "USUARIO FACTURADO CON AFORO",
+        "VALOR FACTURADO POR VERTIDO",
         "VERTIMIENTO DEL PERIOD EN METROS CUBICOS",
         "VALOR TOTAL FACTURADO",
         "PAGOS DEL CLIENTE DURANTE EL PERÍODO FACTURADO"
@@ -69,7 +69,7 @@ export const ALCANTARILLADO_CONFIG = {
     displayColumns: [
         { original: "FECHA DE EXPEDICIÓN DE LA FACTURA", description: "Fecha de facturación" },
         { original: "CÓDIGO CLASE DE USO", description: "Clasificación del usuario" },
-        { original: "USUARIO FACTURADO CON AFORO", description: "SI o NO (aforo individual)" },
+        { original: "VALOR FACTURADO POR VERTIDO", description: "Valor > 0 indica usuario con micromedidor" },
         { original: "VERTIMIENTO DEL PERIOD EN METROS CUBICOS", description: "Vertimiento en m³" },
         { original: "VALOR TOTAL FACTURADO", description: "Total facturado al usuario" },
         { original: "PAGOS DEL CLIENTE DURANTE EL PERÍODO FACTURADO", description: "Recaudos del período" }

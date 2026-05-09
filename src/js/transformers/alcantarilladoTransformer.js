@@ -9,8 +9,8 @@ const NUMBER_COLUMNS = new Set([
     normalizeColumnName("CÓDIGO CLASE DE USO")
 ]);
 
-const AFORO_COLUMNS = new Set([
-    normalizeColumnName("USUARIO FACTURADO CON AFORO")
+const VERTIDO_COLUMNS = new Set([
+    normalizeColumnName("VALOR FACTURADO POR VERTIDO")
 ]);
 
 const NUMERIC_VALUE_COLUMNS = new Set([
@@ -28,7 +28,7 @@ const alcantarilladoTransformer = {
         const normalizedCol = normalizeColumnName(columnName);
 
         if (DATE_COLUMNS.has(normalizedCol)) return st.formatDate(value);
-        if (AFORO_COLUMNS.has(normalizedCol)) return st.convertAforoState(value);
+        if (VERTIDO_COLUMNS.has(normalizedCol)) return st.convertVertidoState(value);
         if (NUMBER_COLUMNS.has(normalizedCol)) return Number(value) || 0;
         if (NUMERIC_VALUE_COLUMNS.has(normalizedCol)) return st.parseNumber(value);
 

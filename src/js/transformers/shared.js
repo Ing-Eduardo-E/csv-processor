@@ -58,6 +58,12 @@ function convertAforoState(aforo) {
     return 0;
 }
 
+function convertVertidoState(valor) {
+    if (!valor) return 0;
+    const num = parseNumber(valor);
+    return num > 0 ? 1 : 0;
+}
+
 function parseNumber(value) {
     if (typeof value === 'number') return value;
     if (!value) return 0;
@@ -88,5 +94,6 @@ export const sharedTransformers = {
     formatDate,
     convertMedidorState,
     convertAforoState,
+    convertVertidoState,
     parseNumber
 };

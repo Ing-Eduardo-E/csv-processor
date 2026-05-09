@@ -165,7 +165,6 @@ describe('validateCSVStructure - casos de producción', () => {
             'UNIDADES MULTIUSUARIO RESIDENCIAL': '1',
             'UNIDADES MULTIUSUARIO NO RESIDENCIAL': '1',
             'HOGAR COMUNITARIO O SUSTITUTO': '1',
-            'USUARIO FACTURADO CON AFORO': '0',
             'USUARIO CUENTA CON CARACTERIZACIÓ': '1',
             'CARGO FIJO': '1000',
             'CARGO POR VERTIMIENTO BASICO': '2000',
@@ -207,7 +206,7 @@ describe('validateCSVStructure - casos de producción', () => {
         const data = [{
             'FECHA DE EXPEDICIÓN DE LA FACTURA': 'test',
             'CÓDIGO CLASE DE USO': 'test',
-            'USUARIO FACTURADO CON AFORO': 'test',
+            'VALOR FACTURADO POR VERTIDO': 'test',
             'VERTIMIENTO DEL PERIOD EN METROS CUBICOS': 'test',
             'VALOR TOTAL FACTURADO': 'test',
             'PAGOS DEL CLIENTE DURANTE EL PERÍODO FACTURADO': 'test'
@@ -221,7 +220,7 @@ describe('validateCSVStructure - casos de producción', () => {
         const data = [{
             'FECHA DE EXPEDICION DE LA FACTURA': 'test',
             'CODIGO CLASE DE USO': 'test',
-            'USUARIO FACTURADO CON AFORO': 'test',
+            'VALOR FACTURADO POR VERTIDO': 'test',
             'VERTIMIENTO DEL PERIOD EN METROS CUBICOS': 'test',
             'VALOR TOTAL FACTURADO': 'test',
             'PAGOS DEL CLIENTE DURANTE EL PERIODO FACTURADO': 'test'
@@ -235,7 +234,7 @@ describe('validateCSVStructure - casos de producción', () => {
         const data = [{
             'fecha de expedicion de la factura': 'test',
             'codigo clase de uso': 'test',
-            'usuario facturado con aforo': 'test',
+            'valor facturado por vertido': 'test',
             'vertimiento del period en metros cubicos': 'test',
             'valor total facturado': 'test',
             'pagos del cliente durante el periodo facturado': 'test'
@@ -249,7 +248,7 @@ describe('validateCSVStructure - casos de producción', () => {
         const data = [{
             'FECHA  DE   EXPEDICIÓN  DE  LA  FACTURA': 'test',
             'CÓDIGO  CLASE  DE  USO': 'test',
-            'USUARIO  FACTURADO  CON  AFORO': 'test',
+            'VALOR FACTURADO POR VERTIDO': 'test',
             'VERTIMIENTO  DEL  PERIOD  EN  METROS  CUBICOS': 'test',
             'VALOR  TOTAL  FACTURADO': 'test',
             'PAGOS  DEL  CLIENTE  DURANTE  EL  PERÍODO  FACTURADO': 'test'
