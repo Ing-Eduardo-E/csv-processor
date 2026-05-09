@@ -35,7 +35,13 @@ function formatDate(dateStr) {
 }
 
 function convertMedidorState(estado) {
-    if (!estado) return 0;
+    if (!estado && estado !== 0) return 0;
+
+    const numValue = Number(estado);
+    if (!isNaN(numValue)) {
+        return numValue === 1 ? 1 : 0;
+    }
+
     const estadoUpper = String(estado).toUpperCase().trim();
     if (estadoUpper === 'INSTALADO' || (estadoUpper.includes('INSTALADO') && !estadoUpper.includes('NO'))) {
         return 1;
